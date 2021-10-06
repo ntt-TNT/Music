@@ -35,7 +35,7 @@ android:orientation="vertical">
             android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:text="0:00"
-            android:textColor="#060606"/>
+            android:textColor="#060606" />
 
         <TextView
             android:id="@+id/main_final_position"
