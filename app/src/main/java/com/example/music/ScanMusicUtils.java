@@ -27,8 +27,8 @@ public class ScanMusicUtils {
             songModel.setPath(name);
             if (name != null && name.contains("-")) {
                 String[] str = name.split("-");
-                songModel.setSinger(str[0]);
-                songModel.setName(str[1]);
+                songModel.setSinger(str[1]);
+                songModel.setName(str[0]);
             }
             list.add(songModel);
         }
