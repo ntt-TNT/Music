@@ -12,25 +12,19 @@
     app:contentPaddingBottom="15dp"
     app:contentPaddingLeft="10dp"
     app:contentPaddingRight="10dp"
-    app:contentPaddingTop="15dp">
+    app:contentPaddingTop="15dp"
+    android:id="@+id/music_card">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/ivSongImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/tvSongName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/ivSongImage"
             android:layout_marginLeft="12dp"
-            android:layout_toRightOf="@+id/ivSongImage"
             android:ellipsize="end"
             android:singleLine="true"
             android:textColor="#222222"

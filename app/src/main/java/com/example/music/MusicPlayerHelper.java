@@ -164,7 +164,7 @@ public class MusicPlayerHelper implements MediaPlayer.OnBufferingUpdateListener,
         text.setText("停止播放");
         final_position.setText("0:00");
         current_position.setText("0:00");
-        
+
         //移除更新命令
         mHandler.removeMessages(MSG_CODE);
     }

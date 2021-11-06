@@ -1,20 +1,33 @@
 package com.example.music;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer player;
     private TextView final_position;
     private TextView current_position;
+    private RadioButton check_circle;
+    private RadioButton check_random;
+    private RadioButton check_repeat;
+    private WebView web;
+    private String status = "check_circle";;
     /**
      * 歌曲数据源
      */
@@ -42,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
      * 当前播放歌曲游标位置
      */
     private int mPosition = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +77,23 @@ public class MainActivity extends AppCompatActivity {
 //        initData();
         initView();
         initListener();
+
+        mRecyclerView = findViewById(R.id.mRecyclerView);
+        MusicAdapter adapter = new MusicAdapter(songsList);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter.setOnClickListener(new MusicAdapter.OnClickListener() {
+            @Override
+            public void onClick(SongModel songModel, int position) {
+                mPosition = position;
+                Log.d(TAG, "播放："+mPosition);
+                //播放歌曲
+                play(songsList.get(mPosition), true);
+            }
+
+        });
+
     }
     private void initView(){
         mRecyclerView = (RecyclerView) findViewById(R.id.mRecyclerView);
@@ -69,9 +105,13 @@ public class MainActivity extends AppCompatActivity {
         btnNext = (Button) findViewById(R.id.btnNext);
         final_position = (TextView) findViewById(R.id.main_final_position);
         current_position = (TextView) findViewById(R.id.main_current_position);
+        check_circle = (RadioButton) findViewById(R.id.check_circle);
+        check_random = (RadioButton) findViewById(R.id.check_random);
+        check_repeat = (RadioButton) findViewById(R.id.check_repeat);
 
         helper = new MusicPlayerHelper(seekbar,tvSongName,final_position,current_position);
         helper.setOnCompletionListener(mp -> {next();});
+
     }
 
     /**
@@ -82,35 +122,34 @@ public class MainActivity extends AppCompatActivity {
         btnStop.setOnClickListener(this::onClick);
         btnLast.setOnClickListener(this::onClick);
         btnNext.setOnClickListener(this::onClick);
+
+        check_circle.setOnCheckedChangeListener(this::onCheckedChanged);
+        check_random.setOnCheckedChangeListener(this::onCheckedChanged);
+        check_repeat.setOnCheckedChangeListener(this::onCheckedChanged);
     }
 
 
-    /**
-     * 初始化数据局
-     */
-//    public void initData() {
-//        // 请求读写权限
-//        RxPermissions rxPermissions = new RxPermissions(this);
-//        rxPermissions.request(
-//                Manifest.permission.READ_EXTERNAL_STORAGE,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//        ).subscribe(aBoolean -> {
-//            if (!aBoolean) {
-//                Toast.makeText(MainActivity.this,"缺少存储权限，将会导致部分功能无法使用",Toast.LENGTH_LONG).show();
-//            } else {
-////                showInitLoadView();
-////                List<SongModel> musicData = ScanMusicUtils.getMusicData(mContext);
-////                if (!musicData.isEmpty()) {
-////                    hideNoDataView();
-////                    songsList.addAll(musicData);
-////                    mAdapter.refresh(songsList);
-////                } else {
-////                    showNoDataView();
-////                }
-////                hideInitLoadView();
-//            }
-//        });
-//    }
+    public void onCheckedChanged(CompoundButton checkBox, boolean checked) {
+        switch (checkBox.getId()){
+            case R.id.check_circle:
+                if(checked) {
+                    status = "check_circle";
+                }
+                break;
+            case R.id.check_random:
+                if (checked){
+                    status = "check_random";
+                }
+                break;
+            case R.id.check_repeat:
+                if (checked){
+                    status = "check_repeat";
+                }
+                break;
+        }
+
+    }
+
 
 
     /**
@@ -145,23 +184,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onLikeClick(View view){
+        List<SongModel> songLike = LikeMusicUtils.getObject(this,new TypeToken<List<SongModel>>(){}.getType());
 
-    private void run(){
-        Log.d(TAG, "run: ");
-        try {
-            btnStart.setText(R.string.btn_pause);
-            player.reset();
-            AssetManager assetManager = getAssets();
-            AssetFileDescriptor assetFileDescriptor = assetManager.openFd("music/阿肆、郭采洁 - 世界上的另一个我.mp3");
-            Log.d(TAG, "run: "+assetFileDescriptor.getLength());
-            player.setDataSource(assetFileDescriptor.getFileDescriptor(),assetFileDescriptor.getStartOffset(),assetFileDescriptor.getLength());
-            player.prepare();
-            player.start();
-        }catch (Exception e){
-            e.printStackTrace();
+        if (songLike==null){
+            songLike = new ArrayList<>();
         }
 
+        boolean op = true;
+        for (int i=0; i<songLike.size();i++){
+            if (songLike.get(i).getName().equals(songsList.get(mPosition).getName())){
+                op = false;
+            }
+        }
+        if (op){
+            songLike.add(songsList.get(mPosition));
+            LikeMusicUtils.putObject(this,songLike,new TypeToken<List<SongModel>>(){}.getType());
+            Log.d(TAG, "onLikeClick: "+songLike.size());
+        }
     }
+
+
     /**
      * 播放歌曲
      *
@@ -207,7 +250,11 @@ public class MainActivity extends AppCompatActivity {
      * 下一首
      */
     private void next() {
-        mPosition++;
+        if (status == "check_circle"){
+            mPosition++;
+        }else if (status == "check_random"){
+            mPosition = (int) (Math.random()*songsList.size());
+        }
         //如果下一曲大于歌曲数量则取第一首
         if (mPosition >= songsList.size()) {
             mPosition = 0;
@@ -236,6 +283,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         helper.destroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
+    }
+
+    //当OptionsMenu被选中的时候处理具体的响应事件
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_1:
+                return true;
+            case R.id.action_2:
+                Intent intent = new Intent(MainActivity.this,LikeActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            default:
+                //do nothing
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

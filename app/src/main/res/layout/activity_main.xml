@@ -19,6 +19,8 @@ android:orientation="vertical">
 
     </LinearLayout>
 
+
+
     <SeekBar
     android:id="@+id/seekbar"
     android:layout_width="match_parent"
@@ -54,15 +56,16 @@ android:orientation="vertical">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="50dp"
         android:layout_marginBottom="20dp" />
 
+
     <LinearLayout
-        android:id="@+id/linearBtnGroup"
+        android:id="@+id/linearBtnGroup1"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <Button
@@ -89,5 +92,58 @@ android:orientation="vertical">
             android:layout_height="wrap_content"
             android:text="@string/btn_next" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/check_circle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:checked="true"
+                android:text="循环"/>
+
+            <RadioButton
+                android:id="@+id/check_random"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:text="随机"/>
+
+            <RadioButton
+                android:id="@+id/check_repeat"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:text="重复"/>
+
+        </RadioGroup>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="喜欢"
+            android:onClick="onLikeClick"
+            android:padding="0dp"
+            android:clickable="true"
+            android:layout_marginLeft="20dp"/>
+    </LinearLayout>
+
+
+
 
 </LinearLayout>
